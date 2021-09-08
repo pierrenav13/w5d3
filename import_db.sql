@@ -1,5 +1,11 @@
 PRAGMA foreign_keys = ON;
 
+DROP TABLE question_likes;
+DROP TABLE replies;
+DROP TABLE question_follows;
+DROP TABLE questions;
+DROP TABLE users;
+
 CREATE TABLE users (
     id INTEGER PRIMARY KEY,
     fname TEXT NOT NULL,
@@ -7,7 +13,7 @@ CREATE TABLE users (
 );
 
 CREATE TABLE questions (
-    id INTEGER PRIMARY KEY
+    id INTEGER PRIMARY KEY,
     title TEXT NOT NULL,
     body TEXT NOT NULL,
     author_id INTEGER NOT NULL,
@@ -44,7 +50,7 @@ CREATE TABLE question_likes (
     users_id INTEGER NOT NULL,
 
     FOREIGN KEY (question_id) REFERENCES question_follows(question_id),
-    FOREIGN KEY (users_id) REFERENCES question_follows(users_id),
+    FOREIGN KEY (users_id) REFERENCES question_follows(users_id)
 );
 
 INSERT INTO
@@ -64,11 +70,25 @@ VALUES
 INSERT INTO 
     question_follows(question_id, users_id)
 VALUES
-    (SELECT id, author_id FROM questions WHERE question_id = 1 AND author_id = 1),
-    (SELECT id, author_id FROM questions WHERE question_id = 2 AND author_id = 2),
-    (SELECT id, author_id FROM questions WHERE question_id = 3 AND author_id = 3);
+    (SELECT id, author_id FROM questions WHERE author_id = 1),
+    (SELECT id, author_id FROM questions WHERE author_id = 2),
+    (SELECT id, author_id FROM questions WHERE author_id = 3);
 
 INSERT INTO 
-    replies(subject_id, parent_id, author_id, body)
+    replies(subject_id, author_id, parent_id, body)
 VALUES  
-    (S),
+    ((SELECT question_id, users_id FROM question_follows WHERE question_id = 1 AND users_id = 1),
+    (SELECT parent_id FROM replies WHERE parent_id = 1), ('This is reply 1')),
+    
+    ((SELECT question_id, users_id FROM question_follows WHERE question_id = 2 AND users_id = 2),
+    (SELECT parent_id FROM replies WHERE parent_id = 2), ('This is reply 2')),
+    
+    ((SELECT question_id, users_id FROM question_follows WHERE question_id = 3 AND users_id = 3),
+    (SELECT parent_id FROM replies WHERE parent_id = 3), ('This is reply 3'));
+
+    INSERT INTO
+        question_likes(likes, question_id, users_id)
+    VALUES  
+        (100, SELECT question_id, users_id FROM question_follows WHERE question_id = 1 AND users_id = 1),
+        (200, SELECT question_id, users_id FROM question_follows WHERE question_id = 2 AND users_id = 2),
+        (300, SELECT question_id, users_id FROM question_follows WHERE question_id = 3 AND users_id = 3);
