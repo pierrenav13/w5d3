@@ -28,29 +28,28 @@ CREATE TABLE question_follows(
     users_id INTEGER NOT NULL,
 
     FOREIGN KEY (question_id) REFERENCES questions(id),
-    FOREIGN KEY (users_id) REFERENCES questions(author_id)
+    FOREIGN KEY (users_id) REFERENCES users(id)
 );
 
 CREATE TABLE replies (
     id INTEGER PRIMARY KEY,
-    subject_id INTEGER NOT NULL,
+    question_id INTEGER NOT NULL,
     parent_id INTEGER,
     author_id INTEGER NOT NULL,
     body TEXT NOT NULL,
 
-    FOREIGN KEY (subject_id) REFERENCES question_follows(question_id),
+    FOREIGN KEY (question_id) REFERENCES questions(id),
     FOREIGN KEY (parent_id) REFERENCES replies(id),
-    FOREIGN KEY (author_id) REFERENCES questions_follows(users_id)
+    FOREIGN KEY (author_id) REFERENCES users(id)
 );
 
 CREATE TABLE question_likes (
     id INTEGER PRIMARY KEY,
-    likes INTEGER,
     question_id INTEGER NOT NULL,
     users_id INTEGER NOT NULL,
 
-    FOREIGN KEY (question_id) REFERENCES question_follows(question_id),
-    FOREIGN KEY (users_id) REFERENCES question_follows(users_id)
+    FOREIGN KEY (question_id) REFERENCES questions(id),
+    FOREIGN KEY (users_id) REFERENCES users(id)
 );
 
 INSERT INTO
@@ -75,27 +74,30 @@ VALUES
     ((SELECT id FROM questions WHERE author_id = 3), (SELECT author_id FROM questions WHERE id = 3));
 
 INSERT INTO 
-    replies(subject_id, author_id, parent_id, body)
+    replies(question_id, author_id, parent_id, body)
 VALUES  
-    ((SELECT question_id, users_id FROM question_follows WHERE question_id = 1 AND users_id = 1),
+    ((SELECT question_id FROM question_follows WHERE question_id = 1),
+    (SELECT users_id FROM question_follows WHERE users_id = 1),
     (SELECT parent_id FROM replies WHERE parent_id = 1), ('This is reply 1')),
     
-    ((SELECT question_id, users_id FROM question_follows WHERE question_id = 2 AND users_id = 2),
+    ((SELECT question_id FROM question_follows WHERE question_id = 2),
+    (SELECT users_id FROM question_follows WHERE users_id = 2),
     (SELECT parent_id FROM replies WHERE parent_id = 2), ('This is reply 2')),
     
-    ((SELECT question_id, users_id FROM question_follows WHERE question_id = 3 AND users_id = 3),
+    ((SELECT question_id FROM question_follows WHERE question_id = 3),
+    (SELECT users_id FROM question_follows WHERE users_id = 3),
     (SELECT parent_id FROM replies WHERE parent_id = 3), ('This is reply 3'));
 
-    INSERT INTO
-        question_likes(likes, question_id, users_id)
-    VALUES  
-        (100, (SELECT question_id FROM question_follows WHERE question_id = 1), 
-        (SELECT users_id FROM question_follows WHERE users_id = 1)),
+INSERT INTO
+    question_likes(question_id, users_id)
+VALUES  
+    ((SELECT question_id FROM question_follows WHERE question_id = 1), 
+    (SELECT users_id FROM question_follows WHERE users_id = 1)),
 
-        (200, (SELECT question_id FROM question_follows WHERE question_id = 2), 
-        (SELECT users_id FROM question_follows WHERE users_id = 2)),
+    ((SELECT question_id FROM question_follows WHERE question_id = 2), 
+    (SELECT users_id FROM question_follows WHERE users_id = 2)),
 
-        (300, (SELECT question_id FROM question_follows WHERE question_id = 3), 
-        (SELECT users_id FROM question_follows WHERE users_id = 3));
+    ((SELECT question_id FROM question_follows WHERE question_id = 3), 
+    (SELECT users_id FROM question_follows WHERE users_id = 3));
 
         
