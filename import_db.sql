@@ -34,7 +34,7 @@ CREATE TABLE question_follows(
 CREATE TABLE replies (
     id INTEGER PRIMARY KEY,
     question_id INTEGER NOT NULL,
-    parent_id INTEGER,
+    parent_id INTEGER NOT NULL,
     author_id INTEGER NOT NULL,
     body TEXT NOT NULL,
 
@@ -78,15 +78,15 @@ INSERT INTO
 VALUES  
     ((SELECT question_id FROM question_follows WHERE question_id = 1),
     (SELECT users_id FROM question_follows WHERE users_id = 1),
-    (SELECT parent_id FROM replies WHERE parent_id = 1), ('This is reply 1')),
+    1, ('This is reply 1')),
     
     ((SELECT question_id FROM question_follows WHERE question_id = 2),
     (SELECT users_id FROM question_follows WHERE users_id = 2),
-    (SELECT parent_id FROM replies WHERE parent_id = 2), ('This is reply 2')),
+    2, ('This is reply 2')),
     
     ((SELECT question_id FROM question_follows WHERE question_id = 3),
     (SELECT users_id FROM question_follows WHERE users_id = 3),
-    (SELECT parent_id FROM replies WHERE parent_id = 3), ('This is reply 3'));
+    3, ('This is reply 3'));
 
 INSERT INTO
     question_likes(question_id, users_id)
