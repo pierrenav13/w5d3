@@ -70,9 +70,9 @@ VALUES
 INSERT INTO 
     question_follows(question_id, users_id)
 VALUES
-    (SELECT id, author_id FROM questions WHERE author_id = 1),
-    (SELECT id, author_id FROM questions WHERE author_id = 2),
-    (SELECT id, author_id FROM questions WHERE author_id = 3);
+    ((SELECT id FROM questions WHERE author_id = 1), (SELECT author_id FROM questions WHERE id = 1)),
+    ((SELECT id FROM questions WHERE author_id = 2), (SELECT author_id FROM questions WHERE id = 2)),
+    ((SELECT id FROM questions WHERE author_id = 3), (SELECT author_id FROM questions WHERE id = 3));
 
 INSERT INTO 
     replies(subject_id, author_id, parent_id, body)
@@ -89,6 +89,13 @@ VALUES
     INSERT INTO
         question_likes(likes, question_id, users_id)
     VALUES  
-        (100, SELECT question_id, users_id FROM question_follows WHERE question_id = 1 AND users_id = 1),
-        (200, SELECT question_id, users_id FROM question_follows WHERE question_id = 2 AND users_id = 2),
-        (300, SELECT question_id, users_id FROM question_follows WHERE question_id = 3 AND users_id = 3);
+        (100, (SELECT question_id FROM question_follows WHERE question_id = 1), 
+        (SELECT users_id FROM question_follows WHERE users_id = 1)),
+
+        (200, (SELECT question_id FROM question_follows WHERE question_id = 2), 
+        (SELECT users_id FROM question_follows WHERE users_id = 2)),
+
+        (300, (SELECT question_id FROM question_follows WHERE question_id = 3), 
+        (SELECT users_id FROM question_follows WHERE users_id = 3));
+
+        
